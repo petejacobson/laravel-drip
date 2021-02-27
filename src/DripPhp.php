@@ -203,7 +203,7 @@ Class DripPhp implements DripInterface
         // The API wants the params to be JSON encoded
         $req_params = array('subscribers' => array($params));
 
-        $res = $this->makeRequest($url, $req_params, self::POST);
+        $res = $this->makeRequest($url, json_encode($req_params), self::POST); // was getting JSON object err from drip
         if (!empty($res['buffer'])) {
             $raw_json = json_decode($res['buffer'], true);
         }
@@ -230,31 +230,32 @@ Class DripPhp implements DripInterface
 
         $account_id = $params['account_id'];
         unset($params['account_id']); // clear it from the params
-        
+        /*
         foreach ($params as $order) {
+        //print_r($order);die;
             $idOrEmail = null;
             if (isset($order['email'])) {
                 $idOrEmail = $order['email'];
-            } elseif (isset($order['id'])) {
-                $idOrEmail = $order['id'];
+            } elseif (isset($order['person_id'])) {
+                $idOrEmail = $order['person_id'];
             }
 
             if (is_null($idOrEmail)) {
                 throw new Exception('Missing id or email');
             }
-
             if (empty($order['amount'])) {
                 throw new Exception("Amount not specified");
             }
         }
 
-        $api_action = "/$account_id/orders";
+*/
+        $api_action = "$account_id/shopper_activity/order";
         $url = $this->api_end_point . $api_action;
 
         // The API wants the params to be JSON encoded
         $req_params = array('orders' => $params);
 
-        $res = $this->makeRequest($url, $req_params, self::POST);
+        $res = $this->makeRequest($url, json_encode($params), self::POST);
         if (!empty($res['buffer'])) {
             $raw_json = json_decode($res['buffer'], true);
         }
@@ -267,6 +268,7 @@ Class DripPhp implements DripInterface
 
         return $data;
     }
+
 
     /**
     *
